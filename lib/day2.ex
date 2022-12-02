@@ -23,6 +23,24 @@ defmodule Advent2022.Day2 do
     |> String.split(" ")
   end
 
+  def test_moves(theirs) do
+    %{
+      game_score(theirs, "X") => "X",
+      game_score(theirs, "Y") => "Y",
+      game_score(theirs, "Z") => "Z"
+    }
+  end
+
+  def convert_outcome("X"), do: 0
+  def convert_outcome("Y"), do: 3
+  def convert_outcome("Z"), do: 6
+
+  def convert_move(theirs, outcome) do
+    theirs
+    |> test_moves()
+    |> Map.fetch!(convert_outcome(outcome))
+  end
+
   defmodule A do
 
     def solve(data) do
@@ -37,7 +55,14 @@ defmodule Advent2022.Day2 do
   defmodule B do
 
     def solve(data) do
-
+      data
+      |> Enum.map(&Advent2022.Day2.split_moves/1)
+      |> Enum.map(
+        fn [theirs, outcome] ->
+          Advent2022.Day2.game_score(theirs, Advent2022.Day2.convert_move(theirs, outcome)) +
+          Advent2022.Day2.move_score(Advent2022.Day2.convert_move(theirs, outcome))
+        end)
+      |> Enum.sum()
     end
 
   end
