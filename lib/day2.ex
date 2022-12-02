@@ -17,12 +17,6 @@ defmodule Advent2022.Day2 do
   def game_score("C", "Z"), do: 3
   def game_score(_, _), do: 0
 
-  @doc "split each line into a list of [opponent's move, our move]"
-  def split_moves(line) do
-    line
-    |> String.split(" ")
-  end
-
   def test_moves(theirs) do
     %{
       game_score(theirs, "X") => "X",
@@ -45,7 +39,7 @@ defmodule Advent2022.Day2 do
 
     def solve(data) do
       data
-      |> Enum.map(&Advent2022.Day2.split_moves/1)
+      |> Enum.map(&String.split/1)
       |> Enum.map(fn [theirs, ours] -> Advent2022.Day2.game_score(theirs, ours) + Advent2022.Day2.move_score(ours) end)
       |> Enum.sum()
     end
@@ -56,7 +50,7 @@ defmodule Advent2022.Day2 do
 
     def solve(data) do
       data
-      |> Enum.map(&Advent2022.Day2.split_moves/1)
+      |> Enum.map(&String.split/1)
       |> Enum.map(
         fn [theirs, outcome] ->
           Advent2022.Day2.game_score(theirs, Advent2022.Day2.convert_move(theirs, outcome)) +
