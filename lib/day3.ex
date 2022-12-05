@@ -8,7 +8,7 @@ defmodule Advent2022.Day3 do
   def compartmentize(items) do
     items
     # Normal division returns a float, and Enum.split() doesn't like floats
-    |> Enum.split(items |> length |> Integer.div(2))
+    |> Enum.split(items |> length |> div(2))
   end
 
   @doc "a-z -> 1-26, A-Z -> 27-52"
