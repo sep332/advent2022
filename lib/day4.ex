@@ -33,6 +33,14 @@ defmodule Advent2022.Day4 do
 
     def solve(data) do
       data
+      |> Enum.map(&Advent2022.Day4.parse_ranges/1)
+      |> Enum.filter(
+        fn [first_begin, first_end, second_begin, second_end] ->
+          (first_begin <= second_begin && first_end >= second_begin) ||
+          (second_begin <= first_begin && second_end >= first_begin)
+        end
+      )
+      |> length()
     end
 
   end

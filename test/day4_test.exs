@@ -17,7 +17,7 @@ defmodule Advent2022.Day4Test do
     assert @test_data |> Advent2022.Util.parse_strings() |> Advent2022.Day4.A.solve() == @test_answer_1
   end
 
-  @test_answer_2 :fail
+  @test_answer_2 4
 
   test "Day 4 B" do
     assert @test_data |> Advent2022.Util.parse_strings() |> Advent2022.Day4.B.solve() == @test_answer_2
