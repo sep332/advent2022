@@ -1,6 +1,6 @@
 # Advent2022
 
-Advent of Code 2022, implemented in Elixir.\
+Advent of Code 2022, implemented in Elixir.
 
 Note: Make sure the data files in priv/ don't have trailing newlines.
 
