@@ -40,6 +40,15 @@ defmodule Advent2022.Day3 do
 
     def solve(data) do
       data
+      |> Enum.map(&String.split(&1, "", trim: true))
+      |> Enum.chunk_every(3)
+      |> Enum.map(fn [first, second, third] ->
+        MapSet.intersection(MapSet.new(first), MapSet.new(second))
+        |> MapSet.intersection(MapSet.new(third))
+        |> MapSet.to_list()
+      end)
+      |> Enum.map(&Advent2022.Day3.score_item/1)
+      |> Enum.sum()
     end
 
   end
