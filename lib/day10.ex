@@ -38,63 +38,57 @@ defmodule Advent2022.Day10 do
   
     defmodule B do
 
-        def step({instr, incr}, acc) when is_binary(incr) do
-            step({instr, String.to_integer(incr)}, acc)
+        def step(time, register, screen, [{instr, incr} | rest]) when is_binary(incr) do
+            step(time, register, screen, [{instr, String.to_integer(incr)} | rest])
         end
 
-        def step({instr, incr}, {time, register, screen, []}) do
-            step({instr, incr}, {time, register, screen, [{"stop", 0}]})
+        def step(_, _, screen, []) do
+            screen
         end
 
-      def step({"addx", increment}, {time, register, screen, input}) do
-        new_screen = screen <> new_screen_delta(time, register)
-        
-        step({"add2", increment}, {time+1, register, new_screen, input})
-      end
-
-      def step({"add2", increment}, {time, register, screen, [{instr, incr} | rest]}) do
-        new_screen = screen <> new_screen_delta(time, register)
-
-        step({instr, incr}, {time+1, register+increment, new_screen, rest})
-      end
-
-      def step({"noop", _}, {time, register, screen, [{instr, incr} | rest]}) do
-        new_screen = screen <> new_screen_delta(time, register)
-
-        step({instr, incr}, {time+1, register, new_screen, rest})
-      end
-
-      def step({"stop", _}, {_, _, screen, _}) do
-        screen
-      end
-
-      def new_screen_delta(time, register) do
-        column = rem(time, 40)
-
-        maybe_newline = 
-        case column == 39 do
-            true -> "\n"
-            false -> ""
+        def step(time, register, screen, [{"addx", incr} | rest]) do
+            new_screen = screen <> new_screen_delta(time, register)
+            
+            step(time+1, register, new_screen, [{"add2", incr} | rest])
         end
-        case register == column || register == column - 1 || register == column + 1 do
-            true -> "#" <> maybe_newline
-            _ -> "." <> maybe_newline
+
+        def step(time, register, screen, [{"add2", incr} | rest]) do
+            new_screen = screen <> new_screen_delta(time, register)
+
+            step(time+1, register+incr, new_screen, rest)
         end
-      end
-  
-      def solve(data) do
-        [head | rest] =
-        data
-        |> Enum.map(&String.split/1)
-        |> Enum.map(
-            fn ["addx", increment] -> {"addx", String.to_integer(increment)}
-               ["noop"] -> {"noop", 0}
+
+        def step(time, register, screen, [{"noop"} | rest]) do
+            new_screen = screen <> new_screen_delta(time, register)
+
+            step(time+1, register, new_screen, rest)
+        end
+
+        def new_screen_delta(time, register) do
+            column = rem(time, 40)
+
+            maybe_newline = 
+            case column == 39 do
+                true -> "\n"
+                false -> ""
             end
-        )
+            case register == column || register == column - 1 || register == column + 1 do
+                true -> "#" <> maybe_newline
+                _ -> "." <> maybe_newline
+            end
+        end
+    
+        def solve(data) do
+            step(
+                0,
+                1,
+                "", 
+                data
+                |> Enum.map(&String.split/1)
+                |> Enum.map(&List.to_tuple/1)
+            )
 
-        step(head, {0, 1, "", rest})
-
-      end
+        end
   
     end
   end
