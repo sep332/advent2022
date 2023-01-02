@@ -62,7 +62,7 @@ defmodule Advent2022.Day25 do
         convert_to_base_five(decimal, exponent, [])
       end
 
-      def convert_to_base_five(decimal, -1, digits) do
+      def convert_to_base_five(_decimal, -1, digits) do
         digits
       end
 
@@ -78,7 +78,6 @@ defmodule Advent2022.Day25 do
 
     
         def solve(data) do
-            data
 
         end
   

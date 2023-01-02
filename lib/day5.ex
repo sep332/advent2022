@@ -1,71 +1,64 @@
 defmodule Advent2022.Day5 do
+
+  @move_functions %{
+    a: &Advent2022.Day5.move_crates_a/4,
+    b: &Advent2022.Day5.move_crates_b/4
+  }
+
   def real_data do
     File.read!("priv/day5.txt")
     |> Advent2022.Util.parse_strings()
   end
 
-  def test_data do
-    """
-        [D]    
-    [N] [C]    
-    [Z] [M] [P]
-     1   2   3 
-    
-    move 1 from 2 to 1
-    move 3 from 1 to 3
-    move 2 from 2 to 1
-    move 1 from 1 to 2\
-    """
-  end
-
   @doc "step1() can only be called with blank stacks []. It will initalize the right number of empty stacks and call step()."
-  def step1(lines = [next_line | _], []) do
+  def step1(lines = [next_line | _], [], version) do
     step(
       lines,
       Regex.scan(~r/((\[(?<crate>\w)\]|   ) ?)/, next_line, capture: :all_names)
-      |> IO.inspect(label: "stack width")
-      |> Enum.map(fn _ -> [] end)
+      |> Enum.map(fn _ -> [] end),
+      version
     )
   end
 
-  def step([next_line | lines], stacks) do
+  def step([next_line | lines], stacks, version) do
     cond do
-      match?(^next_line, "") -> step(lines, stacks)
+      match?(^next_line, "") -> step(lines, stacks, version)
 
       # Done with init. Flip each stack upside down.
       Regex.match?(~r/^(\s?\d+\s+)+$/, next_line) ->
-        step(lines, stacks |> trim_empty_crates() |> Enum.map(&Enum.reverse(&1) ))
+        step(lines, stacks |> trim_empty_crates() |> Enum.map(&Enum.reverse(&1)), version)
 
       # After init, crates are added and removed from the tops of stacks.
       move = Regex.run(~r/move (\d+) from (\d) to (\d)/, next_line) ->
         step(
           lines, 
-          move_crates(
+          @move_functions[version].(
             Enum.at(move, 1) |> String.to_integer(),
             (Enum.at(move, 2) |> String.to_integer()) - 1,
             (Enum.at(move, 3) |> String.to_integer()) - 1,
             stacks
-          )
+          ),
+          version
         )
         
       # During init, crates get added to the bottom of stacks.
       crates = Regex.scan(~r/((\[(?<crate>\w)\]|   ) ?)/, next_line, capture: :all_names) -> 
-        step(lines, crates |> push_crates(stacks))
+        step(lines, crates |> push_crates(stacks), version)
 
     end
   end
 
   # output
-  def step([], stacks) do
+  def step([], stacks, _version) do
     stacks
     |> Enum.map(&hd(&1))
     |> Enum.join("")
   end
 
-  def move_crates(0, _, _, stacks), do: stacks |> IO.inspect(label: "after")
+  def move_crates_a(0, _, _, stacks), do: stacks
 
-  def move_crates(amount, source, dest, stacks) do
-    move_crates(
+  def move_crates_a(amount, source, dest, stacks) do
+    move_crates_a(
       amount - 1,
       source,
       dest, 
@@ -76,6 +69,17 @@ defmodule Advent2022.Day5 do
         stacks |> List.replace_at(source, bottom) |> List.replace_at(dest, top ++ Enum.at(stacks, dest))
       end.()
     )
+  end
+
+  def move_crates_b(0, _, _, stacks), do: stacks
+
+  def move_crates_b(amount, source, dest, stacks) do
+      stacks
+      |> Enum.at(source)
+      |> Enum.split(amount)
+      |> fn {top, bottom} ->
+        stacks |> List.replace_at(source, bottom) |> List.replace_at(dest, top ++ Enum.at(stacks, dest))
+      end.()
   end
 
 
@@ -96,13 +100,12 @@ defmodule Advent2022.Day5 do
         )
       end
     )
-    |> IO.inspect(label: "trimmed")
   end
 
   defmodule A do
 
     def solve(data) do
-      Advent2022.Day5.step1(data, [])
+      Advent2022.Day5.step1(data, [], :a)
     end
 
   end
@@ -110,6 +113,7 @@ defmodule Advent2022.Day5 do
   defmodule B do
 
     def solve(data) do
+      Advent2022.Day5.step1(data, [], :b)
     end
 
   end
