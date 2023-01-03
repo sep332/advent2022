@@ -33,14 +33,17 @@ defmodule Advent2022.Day8 do
     line
     |> Enum.split(position)
     |> fn {all, []} -> all
-          {left, right} -> left ++ blank_leq(right, tl(left)) |> blank_line_rightward(position + 1) end .()
+          {left, right} -> left ++ blank_leq(right, hd(Enum.reverse(left))) |> blank_line_rightward(position + 1) end .()
   end
 
   def blank_leq(list, value) do
     list
     |> Enum.map(
-      fn item when item > value -> item
-         _ -> -1
+      fn item ->
+        case item > value do
+          true -> item
+          false -> -1
+        end
       end
     )
   end
@@ -64,13 +67,12 @@ defmodule Advent2022.Day8 do
     def solve(data) do
       data
       |> Enum.map(fn line -> line |> String.split("", trim: :true) |> Enum.map(&String.to_integer(&1)) end)
-      |> Advent2022.Day8.four_rotated_copies # north, east, south, west
+      |> Advent2022.Day8.four_rotated_copies # east, south, west, north
       |> Enum.map(&Advent2022.Day8.blank_rightward/1)
       |> Advent2022.Day8.unrotate_four()
       |> Enum.zip() # 4 x N x N -> N x 4 x N
       |> Enum.map(&Tuple.to_list/1)
       |> Enum.map(fn layer -> layer |> Enum.zip() |> Enum.map(&Tuple.to_list/1) end) # N x 4 x N -> N x N x 4
-      |> IO.inspect
       |> Enum.map(
         fn layer ->
           layer
