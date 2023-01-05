@@ -64,7 +64,42 @@ defmodule Advent2022.Day13 do
 
   defmodule B do
 
+    # Copied insertion sort from https://www.samuelwillis.dev/posts/insertion-sort-in-elixir/
+    # https://github.com/SamuelWillis/algorithms/blob/main/elixir/lib/sorting/insertion_sort.ex
+    def sort([]), do: []
+    def sort([first]), do: [first]
+    def sort([first | rest]), do: do_sort([first], rest)
+  
+    defp do_sort(sorted, _unsorted = [head | tail]), do: do_sort(insert(head, sorted), tail)
+    defp do_sort(sorted, []), do: sorted
+  
+    # if no elements to compare against in sorted, return element as a list
+    defp insert(element, _sorted = []), do: [element]
+    # if element is less than the first element of the sorted list, insert at front
+    defp insert(element, [min | rest] = sorted) do
+      Advent2022.Day13.rules(element, min)
+      |> case do
+        1 -> [element | sorted]
+        0 -> [min | insert(element, rest)]
+      end
+    end
+    # Otherwise try insert element into remainder of sorted list
+    defp insert(element, [min | rest]), do: [min | insert(element, rest)]
+
     def solve(data) do
+      data
+      |> Enum.filter(
+        fn "" -> false
+           _ -> true
+        end
+      )
+      |> Enum.map(fn line -> line |> Code.eval_string() |> Tuple.to_list() |> hd() end)
+      |> Kernel.++([[[2]]])
+      |> Kernel.++([[[6]]])
+      |> sort()
+      |> fn lines ->
+        (Enum.find_index(lines, fn item -> item == [[2]] end) + 1) * (Enum.find_index(lines, fn item -> item == [[6]] end) + 1)
+      end.()
       
     end
 
