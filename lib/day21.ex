@@ -10,7 +10,7 @@ defmodule Advent2022.Day21 do
 
     def build_operations(operation_map, [[name | operation] | rest]) do
         operation_map
-        |> Map.merge(%{"#{name}" => operation} |> IO.inspect())
+        |> Map.merge(%{"#{name}" => operation})
         |> build_operations(rest)
     end
 
