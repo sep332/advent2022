@@ -83,8 +83,6 @@ defmodule Advent2022.Day13 do
         0 -> [min | insert(element, rest)]
       end
     end
-    # Otherwise try insert element into remainder of sorted list
-    defp insert(element, [min | rest]), do: [min | insert(element, rest)]
 
     def solve(data) do
       data
